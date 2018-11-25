@@ -1,8 +1,8 @@
 <template>
   <div class="setting-panel container">
     <div class="row justify-content-between">
-          <span>剩余雷数: <span>{{this.remainingBombs}} </span>个</span>
-          <span>持续时间: <span>{{this.timer}} </span>秒</span>
+          <span>剩余雷数: <span>{{controller.remainingBombs}} </span>个</span>
+          <span>持续时间: <span>{{timer}} </span>秒</span>
     </div>
     <h4 class="row">难度选择：</h4>
     <div class="row align-items-center justify-content-between radio-group">          
@@ -11,7 +11,7 @@
         <li><input type="radio" name="mode" id=""/> 中级 (15*15)</li>
         <li><input type="radio" name="mode" id="master"/> 高级 (20*20)</li>
       </ul> -->
-      <span v-for="(item, index) in radios" :key="index">
+      <span v-for="(item, index) in controller.radios" :key="index">
         <input type="radio" :value="item.value" v-model="picked">
         <label :for="item.value">{{item.type}}</label>  
       </span>      
@@ -24,15 +24,21 @@
           “开始游戏”,将开始新游戏</p>      
     </div>
     <div class="row">
-      <button class="btn-primary btn btn-block" @click="startGame">开始游戏</button>
+      <button class="btn-primary btn btn-block" @click="startOrPauseGame">{{`${controller.isStart ? '开始' : '暂停'}游戏`}}</button>
       <button class="btn-danger btn btn-block" @click="endGame">结束游戏</button>
     </div>
   </div>
 </template>
 <script>
 export default {
-    data() {
-      return {
+  computed: {
+    timer() {
+      return new Date()
+    }
+  },
+  data() {
+    return {
+      controller: {
         picked: 10,
         radios: [
           {
@@ -49,25 +55,28 @@ export default {
           }
         ],
         remainingBombs: 0,
-        timer: 0
-      }
-    },
-    methods: {
-      startGame() {
-        this.resetController()
-        this.initPlayGround()
-      },
-      resetController() {
-
-      }
-    },
-    watch: {
-      picked(val) {
-        console.log(val, 'val in picked');
-        
-        this.$emit('classChange', val)
+        isStart: true
       }
     }
+  },
+  methods: {
+    startOrPauseGame() {
+      this.resetController(this.controller)
+      this.initPlayGround()
+    },
+    resetController(controller) {
+      if (!controller.isStart) { // 暂停
+        controller.isStart = true
+      }
+    }
+  },
+  watch: {
+    picked(val) {
+      console.log(val, 'val in picked');
+      
+      this.$emit('classChange', val)
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>

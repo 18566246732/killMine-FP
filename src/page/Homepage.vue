@@ -17,7 +17,7 @@ import Controller from '../components/Controller.vue'
 export default {
   components: {
     PlayGround,
-      Controller
+    Controller
   },
   data() {
     return {
