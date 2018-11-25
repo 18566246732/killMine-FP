@@ -26,22 +26,62 @@ export default {
   },
   name: 'HomePage',
   mounted() {
-    this.bricks = this.createBricks(10)
+    this.bricks = this.createBricks(10, 10)
   },
   methods: {
-    createBricks(num) {
+    createBricks(num, totalBomb) {
       const brick = {
-        bomb_num: 0,
+        bombNum: 0,
         tagged: false,
         protection: true // 点击方块后保护层消失
       }
-      const bricks = new Array(num * num)
-      return JSON.parse(JSON.stringify(bricks.fill(brick))) 
+      const bricksArr = new Array(num * num)
+      const bricksPure = JSON.parse(JSON.stringify(bricksArr.fill(brick)))
+      const bricksWithBombs = this.buryBomb(bricksPure, totalBomb)
+      // debugger
+      return this.setSurroundBombNum(bricksWithBombs)
     },
     handleClassChange(val) {
-      console.log(val, 'val');
-      
       this.bricks = this.createBricks(val)
+    },
+    buryBomb(bricksPure, totalBomb) {
+      const bricks = Object.assign(bricksPure)
+      while (totalBomb --) {
+        bricks[Math.ceil(Math.random()*bricks.length)].bombNum = -1
+      }
+      return bricks
+    },
+    setSurroundBombNum(bricksWithBombs) {
+      const bricksWithBombsLocal = Object.assign(bricksWithBombs)
+      let sorroundIndexArr = [];
+      let row = Math.sqrt(bricksWithBombsLocal.length);
+      for(var i = bricksWithBombsLocal.length; i > 0; i--) {
+        sorroundIndexArr = [i - row - 1, i - row, i - row + 1, i - 1, i + 1, i + row - 1, i + row, i + row + 1];
+        // 边界检测
+        if((i-1) % row == 0) {
+          sorroundIndexArr.splice(0, 1);
+          sorroundIndexArr.splice(2, 1);
+          sorroundIndexArr.splice(3, 1);
+        }
+        if((i-1) % row == row-1) {
+          sorroundIndexArr.splice(2, 1);
+          sorroundIndexArr.splice(3, 1);
+          sorroundIndexArr.splice(5, 1);
+        }
+        let sourbombNum = 0;
+        if(bricksWithBombsLocal[i - 1].bombNum !== -1) {
+          for(var j = 0; j < sorroundIndexArr.length; j++) {
+            // 点击的9方格必须存在才行
+            if(bricksWithBombsLocal[sorroundIndexArr[j] - 1] && bricksWithBombsLocal[sorroundIndexArr[j] - 1].bombNum === -1) {
+              sourbombNum++;
+            }
+          }
+          if(sourbombNum != 0) {
+            bricksWithBombsLocal[i - 1].bombNum = sourbombNum;
+          }
+        }
+      }
+      return bricksWithBombsLocal
     }
   }
 }

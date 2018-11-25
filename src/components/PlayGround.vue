@@ -3,11 +3,11 @@
     <span v-for="(item, index) in bricks" 
       :key="index" class="brick" 
       :class="{'protection': item.protection}" 
-      @click="item.protection = false">
+      @click="handleClick($event, item)">
 
       <img src="../assets/flag.png" alt="flag" v-if="item.tagged">
-      <img src="../assets/mine.png" alt="mine" v-if="item.bomb_num === -1">
-      <span v-else>{{item.bomb_num ? item.bomb_num : ''}}</span>
+      <img src="../assets/mine.png" class="mine" alt="mine" v-if="item.bombNum === -1">
+      <span v-else>{{item.bombNum ? item.bombNum : ''}}</span>
     </span>
   </div>
 </template>
@@ -24,6 +24,12 @@ export default {
   computed: {
     getmaxWidth() {
       return Math.sqrt(this.bricks.length) * BRICK_BASIS + 'px';
+    }
+  },
+  methods: {
+    handleClick(e, brick) {
+      console.log(e, 'event');
+      brick.protection = false
     }
   }
 }
@@ -52,13 +58,16 @@ $brick_basis: 40px;
       position: relative;
       z-index: -1;
     }
+    img.mine {
+      z-index: -1;
+      position: relative;
+    }
   }
 }
 .playground {
   background: grey;
   display: inline-block;
   padding: 10px;
-  // max-width: calc(#{$brick_basis} * 10);
   box-sizing: content-box;
 }
 </style>
