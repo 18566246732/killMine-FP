@@ -1,11 +1,11 @@
 <template>
-  <div class="container bg-info p-2 pt-4 pb-4 text-white">
+  <div class="container bg-info p-2 pt-4 text-white" style="padding-bottom: 40px !important;">
     <div class="row justify-content-center">
-      <div>
-        <play-ground :bricks="bricks"></play-ground>
+      <div style="font-size: 0;">
+        <play-ground :bricks="bricks" :nonBombBrickNum.sync="nonBombBrickNum"></play-ground>
       </div>
       <div style="max-width: 250px" class="ml-4">
-        <controller @classChange="handleClassChange"></controller>       
+        <controller @levelChange="handleLevelChange"></controller>       
       </div>
     </div>
   </div>
@@ -14,43 +14,56 @@
 <script>
 import PlayGround from '../components/PlayGround.vue'
 import Controller from '../components/Controller.vue'
+import {mapState, mapMutations} from 'vuex'
 export default {
   components: {
     PlayGround,
     Controller
   },
+  computed: {
+    ...mapState(['nextAction', 'remainingBombs']),
+  },
   data() {
     return {
-      bricks: []      
+      bricks: [],
+      nonBombBrickNum: 0      
     }
   },
   name: 'HomePage',
   mounted() {
-    this.bricks = this.createBricks(10, 10)
+    this.bricks = this.createBricks(10)
+    this.nonBombBrickNum = this.bricks.length - this.remainingBombs
   },
   methods: {
-    createBricks(num, totalBomb) {
+    ...mapMutations(['set_remainingBombs']),
+    createBricks(num, totalBombRate = 0.1) {
       const brick = {
-        bombNum: 0,
-        tagged: false,
+        bombNum: 0, // 周围雷的数量，-1表示自己是雷，0-8表示自己不是雷
+        tagged: false, // 右键标记
         protection: true // 点击方块后保护层消失
       }
       const bricksArr = new Array(num * num)
       const bricksPure = JSON.parse(JSON.stringify(bricksArr.fill(brick)))
+      const totalBomb = parseInt(totalBombRate*num*num)
+      this.set_remainingBombs(totalBomb)
       const bricksWithBombs = this.buryBomb(bricksPure, totalBomb)
-      // debugger
       return this.setSurroundBombNum(bricksWithBombs)
     },
-    handleClassChange(val) {
+    handleLevelChange(val) {
       this.bricks = this.createBricks(val)
+      this.nonBombBrickNum = this.bricks.length - this.remainingBombs
     },
     buryBomb(bricksPure, totalBomb) {
       const bricks = Object.assign(bricksPure)
-      while (totalBomb --) {
-        bricks[Math.ceil(Math.random()*bricks.length)].bombNum = -1
+      while (totalBomb) {
+        const randomNum = Math.floor(Math.random()*bricks.length)
+        if (bricks[randomNum].bombNum !== -1) {          
+          bricks[randomNum].bombNum = -1
+          totalBomb--
+        }
       }
       return bricks
-    },
+    },    
     setSurroundBombNum(bricksWithBombs) {
       const bricksWithBombsLocal = Object.assign(bricksWithBombs)
       let sorroundIndexArr = [];
@@ -82,6 +95,14 @@ export default {
         }
       }
       return bricksWithBombsLocal
+    },
+  },
+  watch: {
+    nextAction(action) {
+      if (action === 'start') {
+        this.bricks = this.createBricks(Math.sqrt(this.bricks.length))
+        this.nonBombBrickNum = this.bricks.length - this.remainingBombs
+      }
     }
   }
 }
