@@ -5,15 +5,15 @@ Vue.use(Vuex)
 
 const state = {
     remainingBombs: 10,
-    nextAction: 'start'
+    currentState: 'end'
 }
 
 const mutations = {
     set_remainingBombs(state, remainingBombs) {
         state.remainingBombs = remainingBombs
     },
-    set_nextAction(state, nextAction) {
-        state.nextAction = nextAction
+    set_currentState(state, currentState) {
+        state.currentState = currentState
     }
 }
 
