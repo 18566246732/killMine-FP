@@ -80,14 +80,14 @@ export default new StateMachine({
         onRestart(fsm, controller, callback) {
             console.log('------>executing restart');
 
-            const { bricks, totalBomb } = playgroudMaker.createBricks()
+            const { bricks, totalBomb } = playgroudMaker.createBricks(controller.picked)
             controller.bricks = bricks
             controller.remainingBombs = totalBomb
             controller.nonBombBrickNum = bricks.length - totalBomb
             controller.isDisabled = true
             controller.counter = 0
-            controller.btnText = '开始游戏'
-            controller.btnColor = 'primary'
+            controller.btnText = '暂停游戏'
+            controller.btnColor = 'success'
             if(callback) callback(controller)
             
             console.log('<------game restart');
