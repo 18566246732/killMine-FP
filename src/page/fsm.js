@@ -17,6 +17,9 @@ export default new StateMachine({
         {name: 'reset', from: 'init', to: 'init'},
     ],
     methods: {
+        onTransition(fsm) {
+            console.log(fsm, 'fsm------------');
+        },
         onReset(fsm, controller, callback) {
             console.log('------>executing reset');
 
