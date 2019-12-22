@@ -1,4 +1,7 @@
 # kill-mine
+a classic kill mine game using vuejs
+
+![kill mine](./src/assets/kill-mine.png)
 
 ## Project setup
 ```
