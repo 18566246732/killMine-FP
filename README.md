@@ -1,10 +1,10 @@
 # kill-mine
 a classic kill mine game using vuejs
-![kill mine](./src/assets/kill-mine.png)
+![kill mine](http://q2zqa8s0j.bkt.clouddn.com/kill-mine.png)
 
 
 using `finite state machine` design pattern behind the scene:
-![kill mine](./src/assets/state-machine.png)
+![state machine](http://q2zqa8s0j.bkt.clouddn.com/state-machine.png)
 
 ```js
 transitions: [
